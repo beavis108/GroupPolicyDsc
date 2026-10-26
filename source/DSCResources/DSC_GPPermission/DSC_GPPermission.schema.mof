@@ -1,0 +1,13 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPPermission")]
+class DSC_GPPermission : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the Group Policy Object (GPO).")] String Name;
+    [Key, Description("Specifies the name of the security principal (user, group or computer), e.g. `GPO-Admins` or `CONTOSO\\GPO-Admins`. For a computer use the account name, e.g. `SRV01$`.")] String TargetName;
+    [Required, Description("Specifies the type of the security principal. Well-known groups such as `Authenticated Users` are of type `Group`."), ValueMap{"Computer","User","Group"}, Values{"Computer","User","Group"}] String TargetType;
+    [Write, Description("Specifies the permission level of the security principal. Required when `Ensure` is `Present`."), ValueMap{"GpoRead","GpoApply","GpoEdit","GpoEditDeleteModifySecurity"}, Values{"GpoRead","GpoApply","GpoEdit","GpoEditDeleteModifySecurity"}] String PermissionLevel;
+    [Write, Description("Specifies if the permission should be present or absent. Defaults to `Present`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+    [Read, Description("Returns whether the permission is inherited.")] Boolean Inherited;
+    [Read, Description("Returns the type of the security principal as reported by Group Policy, e.g. `WellKnownGroup`.")] String TrusteeType;
+};

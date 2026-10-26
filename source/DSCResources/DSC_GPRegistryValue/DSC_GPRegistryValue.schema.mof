@@ -1,0 +1,13 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPRegistryValue")]
+class DSC_GPRegistryValue : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the Group Policy Object (GPO).")] String Name;
+    [Key, Description("Specifies the registry key, e.g. `HKLM\\Software\\Policies\\Microsoft\\Windows NT\\DNSClient`. `HKLM` (`HKEY_LOCAL_MACHINE`) configures the computer configuration, `HKCU` (`HKEY_CURRENT_USER`) the user configuration of the GPO.")] String Key;
+    [Key, Description("Specifies the name of the registry value. Use `(Default)` for the default value of the key.")] String ValueName;
+    [Write, Description("Specifies the registry value type. Required when `Ensure` is `Present` and `PolicyState` is `Set`."), ValueMap{"String","ExpandString","Binary","DWord","MultiString","QWord"}, Values{"String","ExpandString","Binary","DWord","MultiString","QWord"}] String Type;
+    [Write, Description("Specifies the registry value data. DWord and QWord values are decimal or hexadecimal (`0x` prefix), Binary values are hexadecimal bytes (e.g. `01 ff`), MultiString values are several strings.")] String Value[];
+    [Write, Description("Specifies if the policy sets the value on the clients (`Set`) or deletes it (`Delete`). Defaults to `Set`."), ValueMap{"Set","Delete"}, Values{"Set","Delete"}] String PolicyState;
+    [Write, Description("Specifies if the setting should be present in the GPO or absent (not configured). Defaults to `Present`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+};

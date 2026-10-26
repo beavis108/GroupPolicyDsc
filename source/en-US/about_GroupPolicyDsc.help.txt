@@ -1,0 +1,29 @@
+TOPIC
+    about_GroupPolicyDsc
+
+SHORT DESCRIPTION
+    DSC resources to manage Active Directory Group Policy Objects (GPOs).
+
+LONG DESCRIPTION
+    This module contains DSC resources to create, rename and remove Group
+    Policy Objects, to link them to sites, domains and organizational units,
+    to block inheritance, to delegate permissions, to configure registry-based
+    policy settings and registry preference items, to import, copy and back up
+    GPOs and to create Starter GPOs. The resources use the cmdlets of the
+    PowerShell module GroupPolicy (GPMC) and install the Windows feature GPMC
+    when it is missing on Windows Server.
+
+EXAMPLES
+    See the examples in the Examples folder.
+
+NOTE:
+    Thank you to all those who contributed to this module, by writing code, sharing opinions, and provided feedback.
+
+TROUBLESHOOTING NOTE:
+    Look out on the GitHub repository for issues and new releases.
+
+SEE ALSO
+  - https://github.development.tega.intranetbw.de/ChristophMeyer/GroupPolicyDsc
+
+KEYWORDS
+    DSC, GPO, GroupPolicy, GPMC, ActiveDirectory

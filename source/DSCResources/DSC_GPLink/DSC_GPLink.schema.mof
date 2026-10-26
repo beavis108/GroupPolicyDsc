@@ -1,0 +1,13 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPLink")]
+class DSC_GPLink : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the Group Policy Object (GPO).")] String Name;
+    [Key, Description("Specifies the distinguished name of the site, domain or organizational unit the GPO is linked to, e.g. `OU=Servers,DC=contoso,DC=com`.")] String Target;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+    [Write, Description("Specifies if the link is enabled. New links are enabled by default.")] Boolean LinkEnabled;
+    [Write, Description("Specifies if the link is enforced. New links are not enforced by default.")] Boolean Enforced;
+    [Write, Description("Specifies the link order (1 is the highest precedence). New links get the lowest precedence by default.")] UInt32 Order;
+    [Write, Description("Specifies if the link should be present or absent. Defaults to `Present`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Read, Description("Returns the unique identifier (GUID) of the GPO.")] String GpoId;
+};

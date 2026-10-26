@@ -1,0 +1,11 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPInheritance")]
+class DSC_GPInheritance : OMI_BaseResource
+{
+    [Key, Description("Specifies the distinguished name of the domain or organizational unit, e.g. `OU=Servers,DC=contoso,DC=com`.")] String Target;
+    [Required, Description("Specifies if the inheritance of GPOs from parent containers is blocked (`$true`) or not (`$false`).")] Boolean IsBlocked;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the container. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+    [Read, Description("Returns the type of the container, `Domain` or `OU`.")] String ContainerType;
+    [Read, Description("Returns the display names of the GPOs linked directly to the container.")] String GpoLinks[];
+    [Read, Description("Returns the display names of all GPOs that apply to the container, including inherited ones.")] String InheritedGpoLinks[];
+};

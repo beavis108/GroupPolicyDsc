@@ -1,0 +1,15 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPOImport")]
+class DSC_GPOImport : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the Group Policy Object (GPO) the settings are imported into. The GPO is created when it does not exist.")] String Name;
+    [Required, Description("Specifies the folder that contains the GPO backups (one sub folder per backup, as created by `Backup-GPO` or GPMC).")] String Path;
+    [Write, Description("Specifies the ID of the backup to import, e.g. `{a2f8c1b5-8f8e-4d7c-9a4e-1c2d3e4f5a6b}`. When not specified, the most recent backup of the GPO `BackupGpoName` is imported.")] String BackupId;
+    [Write, Description("Specifies the display name of the backed-up GPO. Only used when `BackupId` is not specified. Defaults to `Name`.")] String BackupGpoName;
+    [Write, Description("Specifies the path of a migration table file (`.migtable`) used to map security principals and UNC paths.")] String MigrationTable;
+    [Write, Description("Specifies when the backup is imported. `Once` imports the backup when the GPO does not exist or contains no settings. `Enforce` imports the backup again whenever the settings of the GPO differ from the backup. Defaults to `Once`."), ValueMap{"Once","Enforce"}, Values{"Once","Enforce"}] String Mode;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+    [Read, Description("Returns the unique identifier (GUID) of the GPO.")] String GpoId;
+    [Read, Description("Returns whether the GPO contains settings (version of the computer or user configuration greater than 0).")] Boolean HasSettings;
+    [Read, Description("Returns whether the settings of the GPO match the settings of the backup. Only evaluated when `Mode` is `Enforce`.")] Boolean SettingsMatch;
+};

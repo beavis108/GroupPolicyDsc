@@ -1,0 +1,17 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPPrefRegistryValue")]
+class DSC_GPPrefRegistryValue : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the Group Policy Object (GPO).")] String Name;
+    [Key, Description("Specifies if the preference item is configured in the computer or the user configuration of the GPO."), ValueMap{"Computer","User"}, Values{"Computer","User"}] String Context;
+    [Key, Description("Specifies the registry key, e.g. `HKEY_LOCAL_MACHINE\\SOFTWARE\\Contoso`. Registry preferences support every hive.")] String Key;
+    [Key, Description("Specifies the name of the registry value.")] String ValueName;
+    [Write, Description("Specifies the action of the preference item on the clients. Defaults to `Update`."), ValueMap{"Create","Replace","Update","Delete"}, Values{"Create","Replace","Update","Delete"}] String Action;
+    [Write, Description("Specifies the registry value type. Required when `Ensure` is `Present` and `Action` is not `Delete`."), ValueMap{"String","ExpandString","Binary","DWord","MultiString","QWord"}, Values{"String","ExpandString","Binary","DWord","MultiString","QWord"}] String Type;
+    [Write, Description("Specifies the registry value data. DWord and QWord values are decimal or hexadecimal (`0x` prefix), Binary values are hexadecimal bytes (e.g. `01 ff`), MultiString values are several strings.")] String Value[];
+    [Write, Description("Specifies if the preference item is disabled (not applied on the clients). Defaults to `$false`.")] Boolean Disabled;
+    [Write, Description("Specifies if the preference item should be present or absent. Defaults to `Present`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+    [Read, Description("Returns the processing order of the preference item.")] SInt32 Order;
+    [Read, Description("Returns the number of preference items that exist for the registry value.")] UInt32 ItemCount;
+};

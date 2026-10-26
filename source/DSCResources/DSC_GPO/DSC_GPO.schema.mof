@@ -1,0 +1,18 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPO")]
+class DSC_GPO : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the Group Policy Object (GPO).")] String Name;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+    [Write, Description("Specifies the comment (description) of the GPO.")] String Comment;
+    [Write, Description("Specifies which parts of the GPO are enabled."), ValueMap{"AllSettingsEnabled","UserSettingsDisabled","ComputerSettingsDisabled","AllSettingsDisabled"}, Values{"AllSettingsEnabled","UserSettingsDisabled","ComputerSettingsDisabled","AllSettingsDisabled"}] String Status;
+    [Write, Description("Specifies the name of the WMI filter linked to the GPO. An empty string removes the WMI filter.")] String WmiFilterName;
+    [Write, Description("Specifies the name of a Starter GPO the GPO is created from. Only used when the GPO is created.")] String StarterGpoName;
+    [Write, Description("Specifies a previous display name of the GPO. When the GPO `Name` does not exist but a GPO with this name does, that GPO is renamed instead of creating a new one.")] String PreviousName;
+    [Write, Description("Specifies if the links of the GPO are kept when the GPO is removed. Defaults to `$false`.")] Boolean KeepLinks;
+    [Write, Description("Specifies if the GPO should be present or absent. Defaults to `Present`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Read, Description("Returns the unique identifier (GUID) of the GPO.")] String Id;
+    [Read, Description("Returns the owner of the GPO.")] String Owner;
+    [Read, Description("Returns the Active Directory version number of the computer configuration.")] UInt32 ComputerVersion;
+    [Read, Description("Returns the Active Directory version number of the user configuration.")] UInt32 UserVersion;
+};

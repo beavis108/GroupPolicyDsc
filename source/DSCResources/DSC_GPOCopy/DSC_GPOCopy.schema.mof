@@ -1,0 +1,14 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPOCopy")]
+class DSC_GPOCopy : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the new Group Policy Object (GPO).")] String TargetName;
+    [Required, Description("Specifies the display name of the GPO that is copied.")] String SourceName;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the source GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String SourceDomain;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the new GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String TargetDomain;
+    [Write, Description("Specifies the domain controller of the source domain. Defaults to the PDC emulator.")] String SourceServer;
+    [Write, Description("Specifies the domain controller of the target domain. Defaults to the PDC emulator.")] String TargetServer;
+    [Write, Description("Specifies the path of a migration table file (`.migtable`). Mainly used when the GPO is copied to another domain.")] String MigrationTable;
+    [Write, Description("Specifies if the permissions of the source GPO are copied to the new GPO. Defaults to `$false` (the new GPO gets the default permissions).")] Boolean CopyAcl;
+    [Read, Description("Returns the unique identifier (GUID) of the new GPO.")] String TargetGpoId;
+    [Read, Description("Returns the unique identifier (GUID) of the source GPO.")] String SourceGpoId;
+};

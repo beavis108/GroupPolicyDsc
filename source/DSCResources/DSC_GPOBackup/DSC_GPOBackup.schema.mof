@@ -1,0 +1,13 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPOBackup")]
+class DSC_GPOBackup : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the Group Policy Object (GPO) that is backed up.")] String Name;
+    [Key, Description("Specifies the backup folder, e.g. `\\\\fs01\\GPOBackup$`. The folder is created when it does not exist.")] String Path;
+    [Write, Description("Specifies the comment of new backups.")] String Comment;
+    [Write, Description("Specifies the fully qualified domain name of the domain of the GPO. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+    [Read, Description("Returns the unique identifier (GUID) of the GPO.")] String GpoId;
+    [Read, Description("Returns the ID of the most recent backup of the GPO in `Path`.")] String LatestBackupId;
+    [Read, Description("Returns the time (UTC) of the most recent backup of the GPO in `Path`.")] String LatestBackupTime;
+    [Read, Description("Returns whether the most recent backup contains the current version of the GPO.")] Boolean BackupCurrent;
+};

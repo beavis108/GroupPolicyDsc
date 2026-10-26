@@ -1,0 +1,9 @@
+[ClassVersion("1.0.0.0"), FriendlyName("GPStarterGPO")]
+class DSC_GPStarterGPO : OMI_BaseResource
+{
+    [Key, Description("Specifies the display name of the Starter GPO.")] String Name;
+    [Write, Description("Specifies the comment of the Starter GPO. Only used when the Starter GPO is created.")] String Comment;
+    [Write, Description("Specifies the fully qualified domain name of the domain. Defaults to the domain of the account the LCM runs as (the computer domain).")] String Domain;
+    [Write, Description("Specifies the domain controller to contact. Defaults to the PDC emulator.")] String Server;
+    [Read, Description("Returns the unique identifier (GUID) of the Starter GPO.")] String Id;
+};

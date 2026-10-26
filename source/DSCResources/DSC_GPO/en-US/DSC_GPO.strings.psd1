@@ -1,0 +1,26 @@
+# Localized resources for DSC_GPO
+
+ConvertFrom-StringData @'
+    GetCurrentState = Getting the current state of the Group Policy Object '{0}'. (GPO0001)
+    ModuleNotAvailable = The PowerShell module 'GroupPolicy' is not available. The GPO is reported as absent. (GPO0002)
+    GpoNotFound = The Group Policy Object '{0}' does not exist. (GPO0003)
+    GpoFound = Found the Group Policy Object '{0}' with the ID '{1}' and the status '{2}'. (GPO0004)
+    TestDesiredState = Determining whether the Group Policy Object '{0}' is in the desired state. (GPO0005)
+    InDesiredState = The Group Policy Object '{0}' is in the desired state. (GPO0006)
+    NotInDesiredState = The Group Policy Object '{0}' is not in the desired state. (GPO0007)
+    EnsureMismatch = The Group Policy Object '{0}' should be '{1}', but is '{2}'. (GPO0008)
+    PropertyMismatch = The property '{1}' of the Group Policy Object '{0}' should be '{2}', but is '{3}'. (GPO0009)
+    RemovingGpo = Removing the Group Policy Object '{0}' (keep links: '{1}'). (GPO0010)
+    RemoveGpoFailed = Failed to remove the Group Policy Object '{0}'. (GPO0011)
+    RenamingGpo = Renaming the Group Policy Object '{0}' to '{1}'. (GPO0012)
+    RenameGpoFailed = Failed to rename the Group Policy Object '{0}' to '{1}'. (GPO0013)
+    StarterGpoNotFound = The Starter GPO '{0}' does not exist. Create it first, for example with the resource GPStarterGPO. (GPO0014)
+    CreatingGpo = Creating the Group Policy Object '{0}'. (GPO0015)
+    CreateGpoFailed = Failed to create the Group Policy Object '{0}'. (GPO0016)
+    WmiFilterNotFound = The WMI filter '{0}' does not exist in the domain. Create the WMI filter first. (GPO0017)
+    SettingComment = Setting the comment of the Group Policy Object '{0}' to '{1}'. (GPO0018)
+    SettingStatus = Setting the status of the Group Policy Object '{0}' to '{1}'. (GPO0019)
+    SettingWmiFilter = Linking the WMI filter '{1}' to the Group Policy Object '{0}'. (GPO0020)
+    RemovingWmiFilter = Removing the WMI filter from the Group Policy Object '{0}'. (GPO0021)
+    ChangeGpoFailed = Failed to change the Group Policy Object '{0}'. (GPO0022)
+'@
