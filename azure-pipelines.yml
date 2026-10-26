@@ -1,0 +1,218 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - source/*
+  tags:
+    include:
+      - 'v*'
+    exclude:
+      - '*-*'
+
+variables:
+  buildFolderName: output
+  buildArtifactName: output
+  testResultFolderName: testResults
+  testArtifactName: testResults
+  sourceFolderName: source
+  defaultBranch: main
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Package_Module
+        displayName: 'Package Module'
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - pwsh: |
+              dotnet tool install --global GitVersion.Tool --version 5.*
+              $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
+              $gitVersionObject.PSObject.Properties.ForEach{
+                  Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
+                  Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
+              }
+              Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+            displayName: Calculate ModuleVersion (GitVersion)
+          - task: PowerShell@2
+            name: package
+            displayName: 'Build & Package Module'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-ResolveDependency -tasks pack'
+              pwsh: true
+            env:
+              ModuleVersion: $(NuGetVersionV2)
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Build Artifact'
+            inputs:
+              targetPath: '$(buildFolderName)/'
+              artifact: $(buildArtifactName)
+              publishLocation: 'pipeline'
+
+  - stage: Quality_Test_and_Unit_Test
+    displayName: 'Quality Test and Unit Test'
+    dependsOn: Build
+    jobs:
+      - job: Test_HQRM
+        displayName: 'HQRM'
+        pool:
+          vmImage: 'windows-latest'
+        timeoutInMinutes: '0'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: PowerShell@2
+            name: test
+            displayName: 'Run HQRM Test'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-Tasks hqrmtest'
+              pwsh: false
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'HQRM'
+            condition: succeededOrFailed()
+
+      - job: Test_Unit
+        displayName: 'Unit'
+        strategy:
+          matrix:
+            Windows Server 2022:
+              vmImage: 'windows-2022'
+            Windows Server 2025:
+              vmImage: 'windows-2025'
+        pool:
+          vmImage: $(vmImage)
+        timeoutInMinutes: '0'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: PowerShell@2
+            name: test
+            displayName: 'Run Unit Test'
+            inputs:
+              filePath: './build.ps1'
+              arguments: "-Tasks test -PesterScript 'tests/Unit'"
+              pwsh: true
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Unit $(vmImage)'
+            condition: succeededOrFailed()
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Test Artifact'
+            inputs:
+              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
+              artifactName: '$(testArtifactName)_$(vmImage)'
+
+      - job: Code_Coverage
+        displayName: 'Publish Code Coverage'
+        dependsOn: Test_Unit
+        pool:
+          vmImage: 'ubuntu-latest'
+        timeoutInMinutes: '0'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Test Artifact'
+            inputs:
+              buildType: 'current'
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
+              itemPattern: '$(testArtifactName)_*/**'
+
+          - task: PowerShell@2
+            name: merge
+            displayName: 'Merge Code Coverage files'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks merge'
+              pwsh: true
+
+          - task: PublishCodeCoverageResults@2
+            displayName: 'Publish Code Coverage to Azure DevOps'
+            inputs:
+              summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+              pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
+
+          - script: |
+              bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml"
+            displayName: 'Publish Code Coverage to Codecov.io'
+
+  - stage: Deploy
+    dependsOn:
+      - Quality_Test_and_Unit_Test
+    # Only execute deploy stage if we're on main (or a release tag) and previous stage succeeded.
+    # NOTE: Integration tests are intentionally not run on hosted agents. The resources need an
+    #       Active Directory domain (domain controller and GPMC), which hosted agents do not have.
+    condition: |
+      and(
+        succeeded(),
+        or(
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+          startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+        )
+      )
+    jobs:
+      - job: Deploy_Module
+        displayName: 'Deploy Module'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: PowerShell@2
+            name: publishRelease
+            displayName: 'Publish Release'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks publish'
+              pwsh: true
+            env:
+              GitHubToken: $(GitHubToken)
+              GalleryApiToken: $(GalleryApiToken)
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)
+
+          - task: PowerShell@2
+            name: sendChangelogPR
+            displayName: 'Send Changelog PR'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks Create_ChangeLog_GitHub_PR'
+              pwsh: true
+            env:
+              GitHubToken: $(GitHubToken)
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)
