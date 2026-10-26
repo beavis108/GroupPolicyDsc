@@ -63,9 +63,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - BREAKING CHANGE: Resources renamed, split and prefix changed from `MSFT_` to
   `DSC_`:
-  - `xGroupPolicyImport` → `GPOImport` (import), `GPLink` (links) and
+  - `xGroupPolicyImport` -> `GPOImport` (import), `GPLink` (links) and
     `GPPermission` (permission).
-  - `xGroupPolicyInheritance` → `GPInheritance`.
+  - `xGroupPolicyInheritance` -> `GPInheritance`.
 - BREAKING CHANGE: Schema keys corrected.
   - GPOImport: Key `Name` (was `TargetName`); `Path` is required and is the
     folder that contains the backups (was `<Path>\<TargetName>`); `Domain`

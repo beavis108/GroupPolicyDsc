@@ -40,7 +40,7 @@ one of them for the same GPO or container.
 
 ## Resources
 
-### xGroupPolicyImport → GPOImport, GPLink and GPPermission
+### xGroupPolicyImport -> GPOImport, GPLink and GPPermission
 
 xGroupPolicyImport created a GPO, imported a backup, linked the GPO and set
 one permission. GroupPolicyDsc splits these tasks, so each of them is tested
@@ -107,7 +107,7 @@ GPPermission BaselineAdmins {
 }
 ```
 
-### xGroupPolicyInheritance → GPInheritance
+### xGroupPolicyInheritance -> GPInheritance
 
 | xGroupPolicyInheritance property | GPInheritance property | Change |
 | --- | --- | --- |
